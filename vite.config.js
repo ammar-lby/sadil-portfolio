@@ -15,6 +15,16 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: './index.html'
-    }
+    },
+    assetsDir: 'assets',
+    copyPublicDir: true,
+    chunkSizeWarningLimit: 1000
+  },
+  server: {
+    port: 5173,
+    host: true
+  },
+  optimizeDeps: {
+    include: ['three']
   }
 })
