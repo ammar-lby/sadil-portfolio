@@ -6,7 +6,9 @@ import CanvasLoader from "../Loader";
 import earthModel from "../../assets/models/earth";
 
 const Earth = () => {
-  const earth = useGLTF(earthModel);
+  const earth = useGLTF(earthModel, undefined, undefined, (error) => {
+    console.error('Error loading model:', error);
+  });
 
   return (
     <primitive object={earth.scene} scale={2.5} position-y={0} rotation-y={0} />
