@@ -114,7 +114,7 @@ const ProjectCard = ({
 
             {/* Expand indicator */}
             {isMobileView && (
-              <div className="absolute bottom-1 left-14 w-8 h-8 rounded-full bg-black/20 text-white/60 flex items-center justify-center backdrop-blur-sm">
+              <div className="absolute bottom-2 left-14 w-8 h-8 rounded-full bg-black/20 text-white/60 flex items-center justify-center backdrop-blur-sm">
                 <span className="text-lg">⤢</span>
               </div>
             )}
@@ -144,13 +144,13 @@ const ProjectCard = ({
               <div className='absolute inset-0 flex justify-between items-center px-4'>
                 <button
                   onClick={handlePrevImage}
-                  className='w-12 h-12 left-20 rounded-full bg-black/20 text-white/60 flex items-center justify-center hover:bg-black/50 hover:text-white transition-all transform hover:scale-110 text-2xl backdrop-blur-sm'
+                  className='w-10 h-10 left-20 rounded-full bg-black/20 text-white/60 flex items-center justify-center hover:bg-black/50 hover:text-white transition-all transform hover:scale-110 text-2xl backdrop-blur-sm'
                 >
                   ❮
                 </button>
                 <button
                   onClick={handleNextImage}
-                  className='w-12 h-12 rounded-full bg-black/20 text-white/60 flex items-center justify-center hover:bg-black/50 hover:text-white transition-all transform hover:scale-110 text-2xl backdrop-blur-sm'
+                  className='w-10 h-10 rounded-full bg-black/20 text-white/60 flex items-center justify-center hover:bg-black/50 hover:text-white transition-all transform hover:scale-110 text-2xl backdrop-blur-sm'
                 >
                   ❯
                 </button>
@@ -323,14 +323,14 @@ const ProjectCard = ({
                 />
                 <button
                   onClick={() => setIsFullscreen(false)}
-                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/40 text-white/60 flex items-center justify-center hover:bg-black/70 hover:text-white transition-all transform hover:scale-110 text-xl backdrop-blur-sm"
+                  className="absolute top-0 right-22 w-8 h-8 rounded-full bg-black/40 text-white/60 flex items-center justify-center hover:bg-black/70 hover:text-white transition-all transform hover:scale-110 text-xl backdrop-blur-sm"
                 >
                   ⤢
                 </button>
 
                 {images.length > 1 && (
                   <>
-                    <div className='absolute inset-x-44 top-1/2 -translate-y-1/2 flex justify-between items-center'>
+                    <div className='absolute inset-x-28 top-1/2 -translate-y-1/2 flex justify-between items-center'>
                       <button
                         onClick={handlePrevImage}
                         className='w-16 h-16 rounded-full bg-black/20 text-white/60 flex items-center justify-center hover:bg-black/50 hover:text-white transition-all transform hover:scale-110 text-3xl backdrop-blur-sm'
