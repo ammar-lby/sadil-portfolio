@@ -3,15 +3,17 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
-import earthModel from "../../assets/models/earth";
 
 const Earth = () => {
-  const earth = useGLTF(earthModel, undefined, undefined, (error) => {
-    console.error('Error loading model:', error);
-  });
+  const earth = useGLTF("./planet/scene.gltf");
 
   return (
-    <primitive object={earth.scene} scale={2.5} position-y={0} rotation-y={0} />
+    <primitive 
+      object={earth.scene} 
+      scale={2.5} 
+      position={[0, 0, 0]} 
+      rotation={[0, 0, 0]} 
+    />
   );
 };
 
@@ -21,7 +23,11 @@ const EarthCanvas = () => {
       shadows
       frameloop='demand'
       dpr={[1, 2]}
-      gl={{ preserveDrawingBuffer: true }}
+      gl={{ 
+        preserveDrawingBuffer: true,
+        antialias: true,
+        alpha: true
+      }}
       camera={{
         fov: 45,
         near: 0.1,
@@ -37,7 +43,6 @@ const EarthCanvas = () => {
           minPolarAngle={Math.PI / 2}
         />
         <Earth />
-
         <Preload all />
       </Suspense>
     </Canvas>
