@@ -93,5 +93,4 @@ sadil-portfolio/
 
 For inquiries about graphic design services or collaboration opportunities, please reach out through the contact form on the website.
 
----
-Designed and developed with ❤️ by Sadil
+--
