@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   publicDir: 'public',
-  assetsInclude: ['.gltf', '.glb', '.bin'],
+  assetsInclude: ['.gltf', '.glb', '.bin', '.png', '.jpg', '.jpeg', '.svg'],
   build: {
     rollupOptions: {
       input: './index.html'
@@ -22,9 +22,14 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: true
+    host: true,
+    fs: {
+      strict: false
+    }
   },
   optimizeDeps: {
-    include: ['three']
-  }
+    include: ['three', '@react-three/fiber', '@react-three/drei'],
+    exclude: ['@react-three/drei']
+  },
+  base: '/'
 })

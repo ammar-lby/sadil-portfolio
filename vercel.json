@@ -7,8 +7,17 @@
       }
     },
     {
+      "src": "/planet/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "/"
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite"
 }
