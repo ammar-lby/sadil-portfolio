@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Tilt from "react-parallax-tilt";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSwipeable } from 'react-swipeable';
 
 import { styles } from "../styles";
 import { google } from "../assets";
@@ -373,6 +374,87 @@ const ProjectCard = ({
 };
 
 const Works = () => {
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const handleProjectClick = (project) => {
+    setSelectedProject(project);
+    setCurrentImageIndex(0);
+  };
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (selectedProject?.images?.length > 1) {
+        setCurrentImageIndex((prev) => 
+          prev === selectedProject.images.length - 1 ? 0 : prev + 1
+        );
+      }
+    },
+    onSwipedRight: () => {
+      if (selectedProject?.images?.length > 1) {
+        setCurrentImageIndex((prev) => 
+          prev === 0 ? selectedProject.images.length - 1 : prev - 1
+        );
+      }
+    },
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: false
+  });
+
+  // Modal component for image viewing
+  const ImageModal = ({ project, isOpen, onClose }) => {
+    if (!isOpen) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+        onClick={onClose}
+      >
+        <div 
+          className="relative max-w-4xl w-full mx-4"
+          onClick={e => e.stopPropagation()}
+          {...swipeHandlers}
+        >
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentImageIndex}
+              src={project.images[currentImageIndex]}
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -300, opacity: 0 }}
+              className="w-full h-auto rounded-lg"
+              alt={`Project image ${currentImageIndex + 1}`}
+            />
+          </AnimatePresence>
+          
+          {project.images.length > 1 && (
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+              {project.images.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full ${
+                    index === currentImageIndex ? 'bg-white' : 'bg-gray-400'
+                  }`}
+                  onClick={() => setCurrentImageIndex(index)}
+                />
+              ))}
+            </div>
+          )}
+          
+          <button
+            className="absolute top-4 right-4 text-white text-xl"
+            onClick={onClose}
+          >
+            ×
+          </button>
+        </div>
+      </motion.div>
+    );
+  };
+
   return (
     <>
       <motion.div variants={textVariant()}>
@@ -398,6 +480,12 @@ const Works = () => {
           <ProjectCard key={`project-${index}`} index={index} {...project} />
         ))}
       </div>
+
+      <ImageModal
+        project={selectedProject}
+        isOpen={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </>
   );
 };
