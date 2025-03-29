@@ -35,7 +35,8 @@ import {
   logo,
   ukim4,
   ukimcards2,
-  beautcards
+  beautcards,
+  afteraffects
 } from "../assets";
 
 
@@ -82,7 +83,6 @@ const technologies = [
     icon: indesign,
   },
 
-
   {
     name: "premier",
     icon: premier,
@@ -97,8 +97,8 @@ const technologies = [
     icon: illustrator,
   },
   {
-    name: "Adobe",
-    icon: adobe,
+    name: "Adobe After Effects",
+    icon: afteraffects,
   },
   {
     name: "HTML 5",

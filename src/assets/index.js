@@ -23,6 +23,7 @@ import canva from "./tech/canva.png";
 import adobe from "./tech/adobe.png";
 import premier from "./tech/premier.png";
 import illustrator from "./tech/illustrator.png";
+import afteraffects from "./tech/ae.png";
 
 import meta from "./company/meta.png";
 import shopify from "./company/shopify.png";
@@ -71,6 +72,7 @@ import ukimcards2 from "./businesscards/ukimcards2.jpg";
 export {
   ukimcards2,
   beautcards,
+  afteraffects,
   ukim4,
   ukimcards,
   maneri,

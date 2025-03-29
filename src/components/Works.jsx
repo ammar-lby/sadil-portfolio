@@ -73,12 +73,12 @@ const ProjectCard = ({
   }, [isExpanded, isMobileView, isFullscreen]);
 
   const handleNextImage = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation(); // Add optional chaining
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const handlePrevImage = (e) => {
-    e.stopPropagation();
+    e?.stopPropagation(); // Add optional chaining
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
