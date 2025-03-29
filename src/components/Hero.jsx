@@ -225,26 +225,20 @@ const HeroCanvas = () => {
           ))}
           {(!isMobile || controlsEnabled) && (
           <OrbitControls
+        
           makeDefault
           enabled={controlsEnabled}
-          enableRotate={controlsEnabled}
+          enableRotate={true}
           enableZoom={false}
-          enablePan={controlsEnabled}
+          enablePan={true}
           enableDamping={true}
           dampingFactor={0.05}
           rotateSpeed={isMobile ? 1.2 : 1.5}
           panSpeed={1.2}
-          enableTouchRotate={controlsEnabled}
-          enableTouchPan={controlsEnabled}
-          touches={{
-            ONE: THREE.TOUCH.ROTATE,
-            TWO: THREE.TOUCH.PAN,
-          }}
-          mouseButtons={{
-            LEFT: THREE.MOUSE.ROTATE,
-            MIDDLE: THREE.MOUSE.DOLLY,
-            RIGHT: THREE.MOUSE.PAN,
-          }}
+          enableTouchRotate={true}
+          enableTouchPan={true}
+          touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.PAN }}
+          mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN }}
         />
             
           )}
