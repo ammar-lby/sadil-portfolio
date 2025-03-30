@@ -33,7 +33,7 @@ const Cloud = ({ startPosition }) => {
 
   const createCloudPart = () => {
     const group = new THREE.Group();
-    
+
     const material = new THREE.MeshPhongMaterial({
       color: 0xffffff,
       transparent: true,
@@ -69,17 +69,17 @@ const Cloud = ({ startPosition }) => {
 const CarrotShip = () => {
   const groupRef = useRef();
 
-  const carrotMaterial = new THREE.MeshPhongMaterial({ 
+  const carrotMaterial = new THREE.MeshPhongMaterial({
     color: 0xff6b3d,
     shininess: 30
   });
 
-  const leavesMaterial = new THREE.MeshPhongMaterial({ 
+  const leavesMaterial = new THREE.MeshPhongMaterial({
     color: 0x2d9645,
     shininess: 20
   });
 
-  const furMaterial = new THREE.MeshPhongMaterial({ 
+  const furMaterial = new THREE.MeshPhongMaterial({
     color: 0xf5f5f5,
     shininess: 10
   });
@@ -161,12 +161,12 @@ const HeroCanvas = () => {
   return (
     <div className="relative w-full h-full">
       {/* Centered Instructions */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 
+      <div className="absolute top-2 left-52 transform -translate-x-1/2 
                     text-gray-600 text-xs md:text-sm bg-white/30 backdrop-blur-sm 
                     px-4 py-2 rounded-full shadow-lg border border-white/50 z-20">
         {isMobile ? (
           controlsEnabled ? (
-            <p>Touch and drag to rotate • Two fingers to move</p>
+            <p>Touch and drag to rotate</p>
           ) : (
             <p>Scroll enabled</p>
           )
@@ -178,7 +178,7 @@ const HeroCanvas = () => {
       {/* Moved toggle button to bottom left */}
       {isMobile && (
         <button
-          className="absolute bottom-4 left-4 bg-white/30 backdrop-blur-sm 
+          className="absolute bottom-20 left-4 bg-white/30 backdrop-blur-sm 
                      px-3 py-1.5 rounded-full text-gray-700 text-sm 
                      shadow-lg border border-white/50 z-20 
                      active:scale-95 transition-transform"
@@ -190,11 +190,11 @@ const HeroCanvas = () => {
       )}
 
       <Canvas
-        camera={{ 
+        camera={{
           position: [0, 0, isMobile ? 25 : 22],
-          fov: 45 
+          fov: 45
         }}
-        style={{ 
+        style={{
           background: 'transparent',
           touchAction: isMobile && !controlsEnabled ? 'auto' : 'none',
           cursor: 'grab'
@@ -208,7 +208,7 @@ const HeroCanvas = () => {
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} intensity={0.8} />
         <directionalLight position={[-5, -5, -5]} intensity={0.4} />
-        
+
         <Suspense fallback={null}>
           <CarrotShip />
           {[
@@ -224,23 +224,23 @@ const HeroCanvas = () => {
             <Cloud key={index} startPosition={position} />
           ))}
           {(!isMobile || controlsEnabled) && (
-          <OrbitControls
-        
-          makeDefault
-          enabled={controlsEnabled}
-          enableRotate={true}
-          enableZoom={false}
-          enablePan={true}
-          enableDamping={true}
-          dampingFactor={0.05}
-          rotateSpeed={isMobile ? 1.2 : 1.5}
-          panSpeed={1.2}
-          enableTouchRotate={true}
-          enableTouchPan={true}
-          touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.PAN }}
-          mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN }}
-        />
-            
+            <OrbitControls
+
+              makeDefault
+              enabled={controlsEnabled}
+              enableRotate={true}
+              enableZoom={false}
+              enablePan={true}
+              enableDamping={true}
+              dampingFactor={0.05}
+              rotateSpeed={isMobile ? 1.2 : 1.5}
+              panSpeed={1.2}
+              enableTouchRotate={true}
+              enableTouchPan={true}
+              touches={{ ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.PAN }}
+              mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN }}
+            />
+
           )}
         </Suspense>
       </Canvas>
@@ -264,12 +264,12 @@ const Hero = () => {
             Hi, I'm <span className='text-[#663635]'>Sadil</span>
           </h1>
           <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-          I am a creative graphic designer specialising in visual content for print, digital media, and branding.          
+            I am a creative graphic designer specialising in visual content for print, digital media, and branding.
           </p>
         </div>
       </div>
 
-   
+
 
       {/* Add the floating design elements */}
       <div className="absolute inset-0">
