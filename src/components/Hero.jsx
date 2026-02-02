@@ -1,403 +1,125 @@
-import { Suspense, useRef, useEffect, useMemo, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import * as THREE from 'three';
-
 import { styles } from "../styles";
-
-const ControlToggle = ({ isEnabled, setIsEnabled }) => {
-  return (
-    <button
-      className="absolute top-4 right-4 bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full 
-                 text-gray-700 text-sm shadow-lg border border-white/50 z-20 
-                 active:scale-95 transition-transform"
-      onClick={() => setIsEnabled(!isEnabled)}
-    >
-      {isEnabled ? '🔒 Lock View' : '🔓 Enable View'}
-    </button>
-  );
-};
-
-const Cloud = ({ startPosition }) => {
-  const cloudRef = useRef();
-  const isMobile = window.innerWidth < 768;
-
-  useFrame(() => {
-    if (cloudRef.current) {
-      // Simpler, more stylized movement
-      cloudRef.current.position.x -= isMobile ? 0.03 : 0.01;
-      if (cloudRef.current.position.x < -35) {
-        cloudRef.current.position.x = 35;
-      }
-    }
-  });
-
-  const createCloudPart = () => {
-    const group = new THREE.Group();
-
-    const material = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.9,
-      flatShading: true,
-    });
-
-    // Simplified cloud shape (lighter on mobile)
-    const isMobile = window.innerWidth < 768;
-    const shapes = isMobile
-      ? [
-          { pos: [0, 0, 0], scale: 0.45 },
-          { pos: [0.25, 0.1, 0], scale: 0.35 },
-          { pos: [-0.25, 0.1, 0], scale: 0.35 },
-        ]
-      : [
-          { pos: [0, 0, 0], scale: 0.5 },
-          { pos: [0.3, 0.1, 0], scale: 0.4 },
-          { pos: [-0.3, 0.1, 0], scale: 0.45 },
-          { pos: [0, 0.2, 0], scale: 0.35 },
-        ];
-
-    shapes.forEach(({ pos, scale }) => {
-      const geometry = new THREE.SphereGeometry(1, 6, 6);
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(...pos);
-      mesh.scale.setScalar(scale);
-      group.add(mesh);
-    });
-
-    group.scale.setScalar(isMobile ? 0.55 : 0.8);
-
-    return group;
-  };
-
-  return <primitive ref={cloudRef} object={createCloudPart()} position={startPosition} />;
-};
-
-const CloudField = ({ positions }) => {
-  const groupRef = useRef();
-  const { camera } = useThree();
-
-  useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.position.copy(camera.position);
-      groupRef.current.quaternion.copy(camera.quaternion);
-    }
-  });
-
-  return (
-    <group ref={groupRef}>
-      {positions.map((position, index) => (
-        <Cloud key={index} startPosition={position} />
-      ))}
-    </group>
-  );
-};
-
-const TwoFingerRotate = ({ controlsRef, enabled }) => {
-  const { gl } = useThree();
-  const lastMidpoint = useRef(null);
-  const isTwoFinger = useRef(false);
-
-  useEffect(() => {
-    if (!enabled) return;
-    const element = gl.domElement;
-    const getMidpoint = (touches) => ({
-      x: (touches[0].clientX + touches[1].clientX) / 2,
-      y: (touches[0].clientY + touches[1].clientY) / 2,
-    });
-
-    const onTouchStart = (e) => {
-      if (e.touches.length !== 2) return;
-      isTwoFinger.current = true;
-      lastMidpoint.current = getMidpoint(e.touches);
-      if (controlsRef.current) {
-        controlsRef.current.enablePan = false;
-      }
-      e.preventDefault();
-    };
-
-    const onTouchMove = (e) => {
-      if (!isTwoFinger.current || e.touches.length !== 2) return;
-      const mid = getMidpoint(e.touches);
-      const dx = mid.x - lastMidpoint.current.x;
-      const dy = mid.y - lastMidpoint.current.y;
-      lastMidpoint.current = mid;
-      if (controlsRef.current) {
-        controlsRef.current.rotateLeft(dx * 0.005);
-        controlsRef.current.rotateUp(dy * 0.005);
-        controlsRef.current.update();
-      }
-      e.preventDefault();
-    };
-
-    const onTouchEnd = (e) => {
-      if (e.touches.length >= 2) return;
-      isTwoFinger.current = false;
-      lastMidpoint.current = null;
-      if (controlsRef.current) {
-        controlsRef.current.enablePan = true;
-      }
-    };
-
-    element.addEventListener("touchstart", onTouchStart, { passive: false });
-    element.addEventListener("touchmove", onTouchMove, { passive: false });
-    element.addEventListener("touchend", onTouchEnd);
-    element.addEventListener("touchcancel", onTouchEnd);
-
-    return () => {
-      element.removeEventListener("touchstart", onTouchStart);
-      element.removeEventListener("touchmove", onTouchMove);
-      element.removeEventListener("touchend", onTouchEnd);
-      element.removeEventListener("touchcancel", onTouchEnd);
-    };
-  }, [gl, enabled, controlsRef]);
-
-  return null;
-};
-
-const CarrotShip = () => {
-  const groupRef = useRef();
-
-  const carrotMaterial = useMemo(
-    () => new THREE.MeshPhongMaterial({ color: 0xff6b3d, shininess: 30 }),
-    []
-  );
-  const leavesMaterial = useMemo(
-    () => new THREE.MeshPhongMaterial({ color: 0x2d9645, shininess: 20 }),
-    []
-  );
-  const furMaterial = useMemo(
-    () => new THREE.MeshPhongMaterial({ color: 0xf5f5f5, shininess: 10 }),
-    []
-  );
-  const noseMaterial = useMemo(
-    () => new THREE.MeshPhongMaterial({ color: 0xff9999 }),
-    []
-  );
-  const eyeMaterial = useMemo(
-    () => new THREE.MeshPhongMaterial({ color: 0x222222 }),
-    []
-  );
-
-  useEffect(() => {
-    if (!groupRef.current) return;
-    groupRef.current.traverse((child) => {
-      if (!child.geometry || !child.geometry.attributes?.position) return;
-      const positions = child.geometry.attributes.position.array;
-      if (!positions || positions.length === 0) return;
-      if (!Number.isFinite(positions[0])) return;
-      child.geometry.computeBoundingSphere();
-    });
-  }, []);
-
-  const isMobile = window.innerWidth < 768;
-
-  return (
-    <group ref={groupRef} scale={isMobile ? 0.55 : 0.8}>
-      {/* Carrot Body */}
-      <mesh material={carrotMaterial} rotation={[0, 0, Math.PI / 2]} position={[0.6, 0, 0]}>
-        <coneGeometry args={[1.6, 4.6, 10]} />
-      </mesh>
-
-      {/* Leaves */}
-      {[...Array(8)].map((_, i) => (
-        <mesh
-          key={i}
-          material={leavesMaterial}
-          position={[2.95, 0.15 * (i - 3.5), 0]}
-          rotation={[-Math.PI / 5, (Math.PI / 4) * (i - 3.5), Math.PI / 2]}
-        >
-          <coneGeometry args={[0.35, 2.4, 6]} />
-        </mesh>
-      ))}
-      {[...Array(6)].map((_, i) => (
-        <mesh
-          key={`small-${i}`}
-          material={leavesMaterial}
-          position={[2.75, 0.12 * (i - 2.5), 0]}
-          rotation={[-Math.PI / 4, (Math.PI / 3.5) * (i - 2.5), Math.PI / 2]}
-        >
-          <coneGeometry args={[0.25, 1.6, 6]} />
-        </mesh>
-      ))}
-
-      {/* Bunny Body */}
-      <mesh material={furMaterial} position={[-0.5, 0.8, 0]} scale={[1, 1.2, 0.8]}>
-        <sphereGeometry args={[0.6, 10, 10]} />
-      </mesh>
-
-      {/* Bunny Head */}
-      <mesh material={furMaterial} position={[-0.8, 1.4, 0]} scale={[0.8, 0.9, 0.7]}>
-        <sphereGeometry args={[0.5, 10, 10]} />
-      </mesh>
-
-      {/* Bunny Ears */}
-      {[-0.2, 0.2].map((z, i) => (
-        <mesh
-          key={i}
-          material={furMaterial}
-          position={[-0.9, 2, z]}
-          rotation={[i === 0 ? -Math.PI / 8 : Math.PI / 8, 0, 0]}
-        >
-          <cylinderGeometry args={[0.1, 0.15, 1, 6]} />
-        </mesh>
-      ))}
-
-      {/* Bunny Face */}
-      <mesh material={noseMaterial} position={[-1.2, 1.3, 0]}>
-        <sphereGeometry args={[0.08, 8, 8]} />
-      </mesh>
-
-      {/* Bunny Eyes */}
-      {[-0.15, 0.15].map((z, i) => (
-        <mesh
-          key={i}
-          material={eyeMaterial}
-          position={[-1.1, 1.5, z]}
-        >
-          <sphereGeometry args={[0.08, 8, 8]} />
-        </mesh>
-      ))}
-    </group>
-  );
-};
-
-const HeroCanvas = () => {
-  const [controlsEnabled, setControlsEnabled] = useState(true);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const controlsRef = useRef(null);
-  const cloudPositions = useMemo(
-    () =>
-      (isMobile
-        ? [
-            [12, 4, -25],
-            [6, -3, -22],
-            [-10, 5, -24],
-            [8, -4, -23]
-          ]
-        : [
-            [16, 6, -28],
-            [8, -4, -24],
-            [-12, 7, -26],
-            [14, -6, -25],
-            [5, 3, -27],
-            [-6, -2, -23]
-          ]),
-    [isMobile]
-  );
-
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-
-  return (
-    <div className="relative w-full h-full">
-      {/* Centered Instructions */}
-      <div className="absolute top-12 left-52 transform -translate-x-1/2 
-                    text-gray-600 text-xs md:text-sm bg-white/30 backdrop-blur-sm 
-                    px-4 py-2 rounded-full shadow-lg border border-white/50 z-20">
-        {isMobile ? (
-          controlsEnabled ? (
-            <p>One finger to move • Two fingers to rotate</p>
-          ) : (
-            <p>Scroll enabled</p>
-          )
-        ) : (
-          <p>Left click to rotate • Right click to move</p>
-        )}
-      </div>
-
-      {/* Moved toggle button to bottom left */}
-      {isMobile && (
-        <button
-          className="absolute bottom-28 left-4 bg-white/30 backdrop-blur-sm 
-                     px-3 py-1.5 rounded-full text-gray-700 text-sm 
-                     shadow-lg border border-white/50 z-20 
-                     active:scale-95 transition-transform"
-          onClick={() => setControlsEnabled(!controlsEnabled)}
-          style={{ touchAction: 'none' }}
-        >
-          {controlsEnabled ? '🔒 Lock View' : '🔓 Enable View'}
-        </button>
-      )}
-
-      <Canvas
-        camera={{
-          position: [0, 0, isMobile ? 25 : 22],
-          fov: 45
-        }}
-        dpr={isMobile ? 1 : [1, 1.5]}
-        gl={{
-          antialias: !isMobile,
-          powerPreference: "high-performance"
-        }}
-        style={{
-          background: 'transparent',
-          touchAction: isMobile && !controlsEnabled ? 'auto' : 'none',
-          cursor: 'grab'
-        }}
-      >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={0.8} />
-        <directionalLight position={[-5, -5, -5]} intensity={0.4} />
-
-        <Suspense fallback={null}>
-          <CarrotShip />
-          <CloudField positions={cloudPositions} />
-          <TwoFingerRotate controlsRef={controlsRef} enabled={controlsEnabled && isMobile} />
-          <OrbitControls
-            makeDefault
-            ref={controlsRef}
-            enabled={controlsEnabled}
-            enableRotate={true}
-            enableZoom={false}
-            enablePan={true}
-            enableDamping={true}
-            dampingFactor={isMobile ? 0.02 : 0.05}
-            rotateSpeed={isMobile ? 1.8 : 1.5}
-            panSpeed={isMobile ? 1.6 : 1.2}
-            enableTouchRotate={true}
-            enableTouchPan={true}
-            touches={isMobile
-              ? { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.PAN }
-              : { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.PAN }
-            }
-            mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN }}
-          />
-        </Suspense>
-      </Canvas>
-    </div>
-  );
-};
+import { motion } from "framer-motion";
 
 const Hero = () => {
-  return (
-    <section className="relative w-full h-screen mx-auto">
-      <div
-        className={`absolute inset-0 top-[100px] sm:top-[120px] max-w-7xl mx-auto ${styles.paddingX} flex flex-col sm:flex-row items-start gap-3 sm:gap-5`}
-      >
-        <div className='flex flex-col justify-center items-center mt-5'>
-          <div className='w-5 h-5 rounded-full bg-[#663635]' />
-          <div className='w-1 sm:h-80 h-40 brown-gradient' />
-        </div>
+  const skills = [
+    "Photoshop",
+    "Illustrator",
+    "InDesign",
+    "Figma",
+    "After Effects",
+    "Premiere Pro",
+  ];
 
-        <div>
-          <h1 className={`${styles.heroHeadText} text-white`}>
-            Hi, I'm <span className='text-[#663635]'>Sadil</span>
-          </h1>
-          <p className={`${styles.heroSubText} mt-2 text-white-100`}>
-            I am a creative graphic designer specialising in visual content for print, digital media, and branding.
-          </p>
+  return (
+    <section className="relative w-full h-screen mx-auto overflow-hidden">
+      <div className={`absolute inset-0 top-[-100px] sm:top-[-40px] max-w-7xl mx-auto ${styles.paddingX} z-10 flex items-center`}>
+        <div className="flex flex-row items-center gap-4 sm:gap-6 w-full">
+          {/* Vertical line indicator - Always on the left */}
+          <div className='flex flex-col justify-center items-center'>
+            <div className='w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#663635] shadow-lg shadow-[#663635]/50' />
+            <div className='w-1 h-56 sm:h-[550px] brown-gradient' />
+          </div>
+
+          {/* Main content - Always on the right */}
+          <div className="flex-1 space-y-5 sm:space-y-7 min-w-0 py-8">
+            {/* Main heading */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-4"
+            >
+              <h1 className={`${styles.heroHeadText} text-white leading-tight`}>
+                Hi, I'm <span className='text-[#663635]'>Sadil</span>
+              </h1>
+              <p className={`${styles.heroSubText} text-white-100 max-w-3xl leading-relaxed`}>
+                Creative Graphic Designer specializing in visual storytelling, brand identity, and digital experiences for print, digital media, and branding.
+              </p>
+            </motion.div>
+
+          {/* Skill badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl"
+          >
+              {skills.map((skill, index) => (
+                <motion.div
+                  key={skill}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="px-4 py-3 bg-[#663635]/20 backdrop-blur-sm border border-[#663635]/30 rounded-lg text-white text-sm sm:text-base font-medium hover:bg-[#663635]/30 transition-all duration-300 text-center"
+                >
+                  {skill}
+                </motion.div>
+              ))}
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-wrap gap-8 sm:gap-12 md:gap-16"
+          >
+            <div className="text-left">
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#663635]">5+</h3>
+              <p className="text-white-100 text-sm sm:text-base mt-2">Years Experience</p>
+            </div>
+            <div className="text-left">
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#663635]">150+</h3>
+              <p className="text-white-100 text-sm sm:text-base mt-2">Projects Completed</p>
+            </div>
+          </motion.div>
+
+          {/* CTA buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="flex flex-col xs:flex-row gap-4"
+          >
+              <motion.a
+                href="#work"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3.5 bg-[#663635] text-white font-semibold rounded-lg hover:bg-[#7d4744] transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-[#663635]/50 text-center text-base"
+              >
+                View My Work
+              </motion.a>
+
+              <motion.a
+                href="#contact"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3.5 bg-transparent border-2 border-[#663635] text-white font-semibold rounded-lg hover:bg-[#663635]/10 transition-all duration-300 text-center text-base"
+              >
+                Get In Touch
+              </motion.a>
+          </motion.div>
+        </div>
         </div>
       </div>
 
-
-
-      {/* Add the floating design elements */}
-      <div className="absolute inset-0">
-        <HeroCanvas />
+      {/* Scroll indicator */}
+      <div className="absolute bottom-6 sm:bottom-10 w-full flex justify-center z-10">
+        <a href="#about">
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="w-7 h-11 sm:w-8 sm:h-12 rounded-3xl border-2 border-[#663635] flex justify-center items-start p-2 cursor-pointer"
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#663635]"
+            />
+          </motion.div>
+        </a>
       </div>
     </section>
   );
