@@ -216,7 +216,7 @@ const testimonials = [
   },
   {
     testimonial:
-      "Sadil has been an invaluable asset to UKIM Youth, consistently delivering high-quality graphic design work, including posters, adverts, and promotional materials. Her creativity and dedication have greatly enhanced our outreach and engagement. We truly appreciate his hard work and talent!",
+      "Sadil has been an invaluable asset to UKIM Youth, consistently delivering high-quality graphic design work, including posters, adverts, and promotional materials. Her creativity and dedication have greatly enhanced our outreach and engagement. We truly appreciate her hard work and talent!",
     name: "Usaid Saiad",
     designation: "President",
     company: "UKIM Youth",
