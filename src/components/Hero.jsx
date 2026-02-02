@@ -25,7 +25,7 @@ const Cloud = ({ startPosition }) => {
   useFrame(() => {
     if (cloudRef.current) {
       // Simpler, more stylized movement
-      cloudRef.current.position.x -= isMobile ? 0.02 : 0.01;
+      cloudRef.current.position.x -= isMobile ? 0.03 : 0.01;
       if (cloudRef.current.position.x < -35) {
         cloudRef.current.position.x = 35;
       }
@@ -42,23 +42,29 @@ const Cloud = ({ startPosition }) => {
       flatShading: true,
     });
 
-    // Simplified cloud shape
-    const shapes = [
-      { pos: [0, 0, 0], scale: 0.5 },
-      { pos: [0.3, 0.1, 0], scale: 0.4 },
-      { pos: [-0.3, 0.1, 0], scale: 0.45 },
-      { pos: [0, 0.2, 0], scale: 0.35 },
-    ];
+    // Simplified cloud shape (lighter on mobile)
+    const isMobile = window.innerWidth < 768;
+    const shapes = isMobile
+      ? [
+          { pos: [0, 0, 0], scale: 0.45 },
+          { pos: [0.25, 0.1, 0], scale: 0.35 },
+          { pos: [-0.25, 0.1, 0], scale: 0.35 },
+        ]
+      : [
+          { pos: [0, 0, 0], scale: 0.5 },
+          { pos: [0.3, 0.1, 0], scale: 0.4 },
+          { pos: [-0.3, 0.1, 0], scale: 0.45 },
+          { pos: [0, 0.2, 0], scale: 0.35 },
+        ];
 
     shapes.forEach(({ pos, scale }) => {
-      const geometry = new THREE.SphereGeometry(1, 8, 8);
+      const geometry = new THREE.SphereGeometry(1, 6, 6);
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(...pos);
       mesh.scale.setScalar(scale);
       group.add(mesh);
     });
 
-    const isMobile = window.innerWidth < 768;
     group.scale.setScalar(isMobile ? 0.55 : 0.8);
 
     return group;
@@ -112,13 +118,14 @@ const CarrotShip = () => {
   );
 
   useEffect(() => {
-    if (groupRef.current) {
-      groupRef.current.traverse((child) => {
-        if (child.geometry) {
-          child.geometry.computeBoundingSphere();
-        }
-      });
-    }
+    if (!groupRef.current) return;
+    groupRef.current.traverse((child) => {
+      if (!child.geometry || !child.geometry.attributes?.position) return;
+      const positions = child.geometry.attributes.position.array;
+      if (!positions || positions.length === 0) return;
+      if (!Number.isFinite(positions[0])) return;
+      child.geometry.computeBoundingSphere();
+    });
   }, []);
 
   const isMobile = window.innerWidth < 768;
@@ -258,16 +265,15 @@ const HeroCanvas = () => {
           position: [0, 0, isMobile ? 25 : 22],
           fov: 45
         }}
-        dpr={isMobile ? [1, 1.2] : [1, 1.5]}
+        dpr={isMobile ? 1 : [1, 1.5]}
+        gl={{
+          antialias: !isMobile,
+          powerPreference: "high-performance"
+        }}
         style={{
           background: 'transparent',
           touchAction: isMobile && !controlsEnabled ? 'auto' : 'none',
           cursor: 'grab'
-        }}
-        onTouchStart={(e) => {
-          if (controlsEnabled) {
-            e.preventDefault();
-          }
         }}
       >
         <ambientLight intensity={0.6} />
@@ -277,27 +283,24 @@ const HeroCanvas = () => {
         <Suspense fallback={null}>
           <CarrotShip />
           <CloudField positions={cloudPositions} />
-          {(!isMobile || controlsEnabled) && (
-            <OrbitControls
-              makeDefault
-              enabled={controlsEnabled}
-              enableRotate={true}
-              enableZoom={false}
-              enablePan={true}
-              enableDamping={true}
-              dampingFactor={isMobile ? 0.03 : 0.05}
-              rotateSpeed={isMobile ? 1.4 : 1.5}
-              panSpeed={isMobile ? 1.1 : 1.2}
-              enableTouchRotate={true}
-              enableTouchPan={true}
-              touches={isMobile
-                ? { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.ROTATE }
-                : { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.PAN }
-              }
-              mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN }}
-            />
-
-          )}
+          <OrbitControls
+            makeDefault
+            enabled={controlsEnabled}
+            enableRotate={true}
+            enableZoom={false}
+            enablePan={true}
+            enableDamping={true}
+            dampingFactor={isMobile ? 0.02 : 0.05}
+            rotateSpeed={isMobile ? 1.8 : 1.5}
+            panSpeed={isMobile ? 1.6 : 1.2}
+            enableTouchRotate={true}
+            enableTouchPan={true}
+            touches={isMobile
+              ? { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.ROTATE }
+              : { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.PAN }
+            }
+            mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN }}
+          />
         </Suspense>
       </Canvas>
     </div>
