@@ -20,11 +20,12 @@ const ControlToggle = ({ isEnabled, setIsEnabled }) => {
 
 const Cloud = ({ startPosition }) => {
   const cloudRef = useRef();
+  const isMobile = window.innerWidth < 768;
 
   useFrame(() => {
     if (cloudRef.current) {
       // Simpler, more stylized movement
-      cloudRef.current.position.x -= 0.01;
+      cloudRef.current.position.x -= isMobile ? 0.02 : 0.01;
       if (cloudRef.current.position.x < -35) {
         cloudRef.current.position.x = 35;
       }
@@ -257,7 +258,7 @@ const HeroCanvas = () => {
           position: [0, 0, isMobile ? 25 : 22],
           fov: 45
         }}
-        dpr={isMobile ? [1, 1.5] : [1, 1.5]}
+        dpr={isMobile ? [1, 1.2] : [1, 1.5]}
         style={{
           background: 'transparent',
           touchAction: isMobile && !controlsEnabled ? 'auto' : 'none',
@@ -284,9 +285,9 @@ const HeroCanvas = () => {
               enableZoom={false}
               enablePan={true}
               enableDamping={true}
-              dampingFactor={isMobile ? 0.12 : 0.05}
-              rotateSpeed={isMobile ? 0.7 : 1.5}
-              panSpeed={isMobile ? 0.6 : 1.2}
+              dampingFactor={isMobile ? 0.03 : 0.05}
+              rotateSpeed={isMobile ? 1.4 : 1.5}
+              panSpeed={isMobile ? 1.1 : 1.2}
               enableTouchRotate={true}
               enableTouchPan={true}
               touches={isMobile
