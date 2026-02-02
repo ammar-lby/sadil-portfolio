@@ -93,6 +93,68 @@ const CloudField = ({ positions }) => {
   );
 };
 
+const TwoFingerRotate = ({ controlsRef, enabled }) => {
+  const { gl } = useThree();
+  const lastMidpoint = useRef(null);
+  const isTwoFinger = useRef(false);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const element = gl.domElement;
+    const getMidpoint = (touches) => ({
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    });
+
+    const onTouchStart = (e) => {
+      if (e.touches.length !== 2) return;
+      isTwoFinger.current = true;
+      lastMidpoint.current = getMidpoint(e.touches);
+      if (controlsRef.current) {
+        controlsRef.current.enablePan = false;
+      }
+      e.preventDefault();
+    };
+
+    const onTouchMove = (e) => {
+      if (!isTwoFinger.current || e.touches.length !== 2) return;
+      const mid = getMidpoint(e.touches);
+      const dx = mid.x - lastMidpoint.current.x;
+      const dy = mid.y - lastMidpoint.current.y;
+      lastMidpoint.current = mid;
+      if (controlsRef.current) {
+        controlsRef.current.rotateLeft(dx * 0.005);
+        controlsRef.current.rotateUp(dy * 0.005);
+        controlsRef.current.update();
+      }
+      e.preventDefault();
+    };
+
+    const onTouchEnd = (e) => {
+      if (e.touches.length >= 2) return;
+      isTwoFinger.current = false;
+      lastMidpoint.current = null;
+      if (controlsRef.current) {
+        controlsRef.current.enablePan = true;
+      }
+    };
+
+    element.addEventListener("touchstart", onTouchStart, { passive: false });
+    element.addEventListener("touchmove", onTouchMove, { passive: false });
+    element.addEventListener("touchend", onTouchEnd);
+    element.addEventListener("touchcancel", onTouchEnd);
+
+    return () => {
+      element.removeEventListener("touchstart", onTouchStart);
+      element.removeEventListener("touchmove", onTouchMove);
+      element.removeEventListener("touchend", onTouchEnd);
+      element.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [gl, enabled, controlsRef]);
+
+  return null;
+};
+
 const CarrotShip = () => {
   const groupRef = useRef();
 
@@ -203,6 +265,7 @@ const CarrotShip = () => {
 const HeroCanvas = () => {
   const [controlsEnabled, setControlsEnabled] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const controlsRef = useRef(null);
   const cloudPositions = useMemo(
     () =>
       (isMobile
@@ -283,8 +346,10 @@ const HeroCanvas = () => {
         <Suspense fallback={null}>
           <CarrotShip />
           <CloudField positions={cloudPositions} />
+          <TwoFingerRotate controlsRef={controlsRef} enabled={controlsEnabled && isMobile} />
           <OrbitControls
             makeDefault
+            ref={controlsRef}
             enabled={controlsEnabled}
             enableRotate={true}
             enableZoom={false}
@@ -296,7 +361,7 @@ const HeroCanvas = () => {
             enableTouchRotate={true}
             enableTouchPan={true}
             touches={isMobile
-              ? { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.ROTATE }
+              ? { ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.PAN }
               : { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.PAN }
             }
             mouseButtons={{ LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN }}
