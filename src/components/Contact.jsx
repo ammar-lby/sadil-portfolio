@@ -185,7 +185,7 @@ const Contact = () => {
       </AnimatePresence>
       <motion.div
         variants={slideIn("left", "tween", 0.2, 1)}
-        className='flex-[0.75] bg-black-200 p-8 rounded-2xl'
+        className='flex-[0.75] bg-black-200 p-6 sm:p-8 rounded-2xl'
       >
         <p className={styles.sectionSubText}>Get in touch</p>
         <h3 className={styles.sectionHeadText}>Contact.</h3>
@@ -193,7 +193,7 @@ const Contact = () => {
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className='mt-12 flex flex-col gap-8'
+          className='mt-10 sm:mt-12 flex flex-col gap-6 sm:gap-8'
         >
           <label className='flex flex-col'>
             <span className='text-white font-medium mb-4'>Your Name</span>
@@ -203,7 +203,7 @@ const Contact = () => {
               value={form.name}
               onChange={handleChange}
               placeholder="Please enter your name."
-              className='bg-beige-100 py-4 px-6 placeholder:text-primary text-white rounded-lg outline-none border-none font-medium'
+              className='bg-beige-100 py-3 px-4 sm:py-4 sm:px-6 placeholder:text-primary text-white rounded-lg outline-none border-none font-medium'
               required
             />
           </label>
@@ -215,7 +215,7 @@ const Contact = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="Please enter your email address."
-              className='bg-beige-100 py-4 px-6 placeholder:text-primary text-white rounded-lg outline-none border-none font-medium'
+              className='bg-beige-100 py-3 px-4 sm:py-4 sm:px-6 placeholder:text-primary text-white rounded-lg outline-none border-none font-medium'
               required
             />
           </label>
@@ -227,14 +227,14 @@ const Contact = () => {
               value={form.message}
               onChange={handleChange}
               placeholder="What do you want to say?"
-              className='bg-beige-100 py-4 px-6 placeholder:text-primary text-white rounded-lg outline-none border-none font-medium'
+              className='bg-beige-100 py-3 px-4 sm:py-4 sm:px-6 placeholder:text-primary text-white rounded-lg outline-none border-none font-medium'
               required
             />
           </label>
 
           <button
             type='submit'
-            className='bg-beige-100 py-3 px-8 rounded-xl outline-none w-fit text-primary font-bold shadow-md shadow-primary'
+            className='bg-beige-100 py-3 px-6 sm:px-8 rounded-xl outline-none w-fit text-primary font-bold shadow-md shadow-primary'
             disabled={loading || !isEmailJSInitialized}
           >
             {loading ? "Sending..." : "Send"}

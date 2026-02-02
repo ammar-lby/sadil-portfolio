@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useSwipeable } from 'react-swipeable';
 
 import { styles } from "../styles";
-import { google } from "../assets";
 import { SectionWrapper } from "../hoc";
 import { projects } from "../constants";
 import { fadeIn, textVariant } from "../utils/motion";
@@ -95,18 +94,20 @@ const ProjectCard = ({
           scale: 1,
           speed: 450,
         }}
-        className='bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full'
+        className='bg-tertiary p-4 sm:p-5 rounded-2xl sm:w-[360px] w-full'
       >
           <div 
             className={`relative w-full transition-all duration-300 ease-in-out cursor-pointer ${
-              isExpanded && !isMobileView ? 'h-[400px]' : 'h-[230px]'
+              isExpanded && !isMobileView ? 'h-[320px] sm:h-[400px]' : 'h-[200px] sm:h-[230px]'
             }`}
             onClick={toggleExpand}
           >
             <motion.img
               key={currentImageIndex}
               src={images[currentImageIndex]}
-            alt='project_image'
+              alt='project_image'
+              loading="lazy"
+              decoding="async"
               className='w-full h-full object-contain rounded-2xl'
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -158,21 +159,6 @@ const ProjectCard = ({
               </div>
             )}
 
-            <div className='absolute top-1 right-4'>
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(source_code_link, "_blank");
-              }}
-              className='green-pink-gradient w-8 h-8 rounded-full flex justify-center items-center cursor-pointer' //brown gradient for google drive logo
-            >
-              <img
-                  src={google}
-                alt='source code'
-                  className='w-600px h-200px object-contain'
-              />
-              </div>
-            </div>
 
             {images.length > 1 && !isMobileView && (
               <div className='absolute bottom-4 left-0 right-0 flex justify-center gap-2'>
@@ -195,15 +181,15 @@ const ProjectCard = ({
         </div>
 
         <div className='mt-5'>
-          <h3 className='text-white font-bold text-[24px]'>{name}</h3>
-          <p className='mt-2 text-secondary text-[14px]'>{description}</p>
+          <h3 className='text-white font-bold text-[20px] sm:text-[24px]'>{name}</h3>
+          <p className='mt-2 text-secondary text-[13px] sm:text-[14px]'>{description}</p>
         </div>
 
         <div className='mt-4 flex flex-wrap gap-2'>
           {tags.map((tag) => (
             <p
               key={`${name}-${tag.name}`}
-              className={`text-[14px] ${tag.color}`}
+              className={`text-[12px] sm:text-[14px] ${tag.color}`}
             >
               #{tag.name}
             </p>
@@ -228,10 +214,10 @@ const ProjectCard = ({
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 120 }}
               className="relative w-full h-full flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
             >
               <div 
-                className="relative w-[85vw] h-[85vw] max-w-[500px] max-h-[500px] flex items-center justify-center"
+                className="relative w-[90vw] h-[90vw] max-w-[500px] max-h-[500px] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
@@ -240,15 +226,37 @@ const ProjectCard = ({
                   key={`fullscreen-${currentImageIndex}`}
                   src={images[currentImageIndex]}
                   alt='project_image'
+                  loading="lazy"
+                  decoding="async"
                   className='w-full h-full object-contain'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 />
                 {images.length > 1 && (
-                  <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 flex justify-between text-white/30 text-4xl pointer-events-none">
-                    <span>❮</span>
-                    <span>❯</span>
+                  <div className="absolute inset-y-0 left-2 right-2 flex items-center justify-between pointer-events-none">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrevImage(e);
+                      }}
+                      className="pointer-events-auto w-14 h-14 rounded-full bg-transparent text-white/90 flex items-center justify-center active:scale-95 transition-transform text-3xl"
+                      aria-label="Previous image"
+                    >
+                      ❮
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNextImage(e);
+                      }}
+                      className="pointer-events-auto w-14 h-14 rounded-full bg-transparent text-white/90 flex items-center justify-center active:scale-95 transition-transform text-3xl"
+                      aria-label="Next image"
+                    >
+                      ❯
+                    </button>
                   </div>
                 )}
               </div>
@@ -256,7 +264,10 @@ const ProjectCard = ({
               {/* Close button for mobile view */}
               <div className="fixed bottom-8 left-0 right-0 flex justify-center">
                 <button
-                  onClick={toggleExpand}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleExpand();
+                  }}
                   className="w-16 h-16 rounded-full bg-black/50 backdrop-blur-md text-white flex items-center justify-center active:bg-black/70 transition-all transform active:scale-95 text-4xl shadow-lg border border-white/10"
                 >
                   ×
@@ -273,7 +284,7 @@ const ProjectCard = ({
                         e.stopPropagation();
                         setCurrentImageIndex(idx);
                       }}
-                      className={`w-3 h-3 rounded-full transition-all ${
+                      className={`w-4 h-4 rounded-full transition-all ${
                         idx === currentImageIndex 
                           ? 'bg-white scale-110 shadow-lg' 
                           : 'bg-white/50 hover:bg-white/75'
@@ -310,6 +321,8 @@ const ProjectCard = ({
                   key={`fullscreen-${currentImageIndex}`}
                   src={images[currentImageIndex]}
                   alt='project_image'
+                  loading="lazy"
+                  decoding="async"
                   className='w-auto h-auto max-w-[90%] max-h-[90%] object-contain rounded-xl'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -427,6 +440,8 @@ const Works = () => {
               exit={{ x: -300, opacity: 0 }}
               className="w-full h-auto rounded-lg"
               alt={`Project image ${currentImageIndex + 1}`}
+              loading="lazy"
+              decoding="async"
             />
           </AnimatePresence>
           
@@ -435,7 +450,7 @@ const Works = () => {
               {project.images.map((_, index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 rounded-full ${
+                  className={`w-4 h-4 rounded-full ${
                     index === currentImageIndex ? 'bg-white' : 'bg-gray-400'
                   }`}
                   onClick={() => setCurrentImageIndex(index)}

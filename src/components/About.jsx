@@ -21,7 +21,7 @@ const ServiceCard = ({ index, title, icon }) => (
           scale: 1,
           speed: 450,
         }}
-        className='bg-[#8C5E5A] rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col'
+        className='bg-[#8C5E5A] rounded-[20px] py-4 px-6 sm:py-5 sm:px-12 min-h-[240px] sm:min-h-[280px] flex justify-evenly items-center flex-col'
       >
         <FontAwesomeIcon 
           icon={
@@ -33,7 +33,7 @@ const ServiceCard = ({ index, title, icon }) => (
           className="w-16 h-16 text-white"
         />
 
-        <h3 className='text-white text-[20px] font-bold text-center'>
+        <h3 className='text-white text-[18px] sm:text-[20px] font-bold text-center'>
           {title}
         </h3>
       </div>

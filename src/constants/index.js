@@ -140,15 +140,27 @@ const technologies = [
 const experiences = [
 
   {
+    title: "Social Media and Marketing Manager",
+    company_name: "UKIM Youth",
+    icon: ukimyouth,
+    iconBg: "#E6DEDD",
+    date: "2025 - Present",
+    points: [
+      "Led social media strategy and marketing campaigns to grow engagement and event awareness across platforms.",
+      "Coordinated content planning with the youth team to ensure timely, consistent, and impactful messaging.",
+      "Developed visual and written assets that align with community values and campaign goals.",
+    ],
+  },
+  {
     title: "Graphic Designer",
     company_name: "UKIM Youth",
     icon: ukimyouth,
     iconBg: "#E6DEDD",
-    date: "October 2023 - Present",
+    date: "2021 - 2024",
     points: [
-      "Designed high-quality posters and flyers for events and youth activities, applying design principles to create visually compelling materials that effectively captured attention and conveyed key messages.",
-      "Collaborated with the youth team to deliver engaging visual content, ensuring event information was clearly communicated and aligned with the needs of the target audience.",
-      "Created culturally sensitive and inclusive outreach materials, incorporating appropriate elements to ensure designs resonated with the community while maintaining respect for traditions and values.",
+      "Designed high-quality posters and flyers for events and youth activities, creating visuals that captured attention and communicated key messages.",
+      "Collaborated with the youth team to deliver engaging visual content aligned with the target audience.",
+      "Produced culturally sensitive outreach materials that resonated with the community while respecting traditions and values.",
     ],
   },
 

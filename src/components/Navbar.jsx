@@ -29,8 +29,10 @@ const Navbar = () => {
     <nav
       className={`${
         styles.paddingX
-      } w-full flex items-center py-5 fixed top-0 z-20 ${
-        scrolled ? "bg-[#663635]" : "bg-transparent"
+      } w-full flex items-center py-4 sm:py-5 fixed top-0 z-20 transition-colors duration-300 ${
+        scrolled
+          ? "bg-[#663635]/80 backdrop-blur-md border-b border-white/10 shadow-lg"
+          : "bg-transparent"
       }`}
     >
       <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
@@ -42,8 +44,14 @@ const Navbar = () => {
             window.scrollTo(0, 0);
           }}
         >
-          <img src={visura} alt='logo' className='w-9 h-9 object-contain' />
-          <p className='text-white text-[18px] font-bold cursor-pointer flex '>
+          <img
+            src={visura}
+            alt='logo'
+            loading="lazy"
+            decoding="async"
+            className='w-9 h-9 object-contain'
+          />
+          <p className='text-white text-[16px] sm:text-[18px] font-bold cursor-pointer flex '>
             Sadil &nbsp;
             <span className='sm:block hidden'> | Graphic Designer </span>
           </p>
@@ -64,12 +72,20 @@ const Navbar = () => {
         </ul>
 
         <div className='sm:hidden flex flex-1 justify-end items-center'>
-          <img
-            src={toggle ? close : menu}
-            alt='menu'
-            className='w-[28px] h-[28px] object-contain'
+          <button
+            type="button"
             onClick={() => setToggle(!toggle)}
-          />
+            className="w-[36px] h-[36px] flex items-center justify-center rounded-full active:scale-95 transition-transform"
+            aria-label="Toggle menu"
+          >
+            <img
+              src={toggle ? close : menu}
+              alt='menu'
+              loading="lazy"
+              decoding="async"
+              className='w-[28px] h-[28px] object-contain'
+            />
+          </button>
 
           <div
             className={`${
