@@ -34,7 +34,7 @@ const Hero = () => {
                 Hi, I'm <span className='text-[#663635]'>Sadil</span>
               </h1>
               <p className={`${styles.heroSubText} text-white-100 max-w-3xl leading-relaxed`}>
-                Creative Graphic Designer specializing in visual storytelling, brand identity, and digital experiences for print, digital media, and branding.
+                Creative Graphic Designer specialising in visual storytelling, brand identity, and digital experiences for print, digital media, and branding.
               </p>
             </motion.div>
 

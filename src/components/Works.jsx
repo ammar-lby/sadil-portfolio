@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Tilt from "react-parallax-tilt";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSwipeable } from 'react-swipeable';
+import { useSwipeable } from "react-swipeable";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 import { styles } from "../styles";
 import { SectionWrapper } from "../hoc";
@@ -21,36 +23,18 @@ const ProjectCard = ({
   const [isMobileView, setIsMobileView] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
   const images = Array.isArray(image) ? image : [image];
 
-  // Minimum swipe distance (in px)
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    
-    if (isLeftSwipe) {
-      handleNextImage();
-    }
-    if (isRightSwipe) {
-      handlePrevImage();
-    }
-  };
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (images.length > 1) handleNextImage();
+    },
+    onSwipedRight: () => {
+      if (images.length > 1) handlePrevImage();
+    },
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: false,
+  });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -103,6 +87,7 @@ const ProjectCard = ({
               isExpanded && !isMobileView ? 'h-[400px]' : 'h-[230px]'
             }`}
             onClick={toggleExpand}
+            {...swipeHandlers}
           >
             <motion.img
               key={currentImageIndex}
@@ -116,7 +101,7 @@ const ProjectCard = ({
 
             {/* Expand indicator */}
             {isMobileView && (
-              <div className="absolute bottom-2 left-14 w-8 h-8 rounded-full bg-black/20 text-white/60 flex items-center justify-center backdrop-blur-sm">
+              <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/20 text-white/60 flex items-center justify-center backdrop-blur-sm">
                 <span className="text-lg">⤢</span>
               </div>
             )}
@@ -153,6 +138,30 @@ const ProjectCard = ({
                 <button
                   onClick={handleNextImage}
                   className='w-10 h-10 rounded-full bg-black/20 text-white/60 flex items-center justify-center hover:bg-black/50 hover:text-white transition-all transform hover:scale-110 text-2xl backdrop-blur-sm'
+                >
+                  ❯
+                </button>
+              </div>
+            )}
+
+            {/* Mobile mini arrows */}
+            {images.length > 1 && isMobileView && (
+              <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrevImage(e);
+                  }}
+                  className="w-10 h-10 text-white/80 flex items-center justify-center text-[18px]"
+                >
+                  ❮
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNextImage(e);
+                  }}
+                  className="w-10 h-10 text-white/80 flex items-center justify-center text-[18px]"
                 >
                   ❯
                 </button>
@@ -213,33 +222,36 @@ const ProjectCard = ({
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 120 }}
               className="relative w-full h-full flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
             >
-              <div 
+              <div
                 className="relative w-[85vw] h-[85vw] max-w-[500px] max-h-[500px] flex items-center justify-center"
-                onTouchStart={onTouchStart}
-                onTouchMove={onTouchMove}
-                onTouchEnd={onTouchEnd}
+                onClick={(e) => e.stopPropagation()}
               >
-                <motion.img
-                  key={`fullscreen-${currentImageIndex}`}
-                  src={images[currentImageIndex]}
-                  alt='project_image'
-                  className='w-full h-full object-contain'
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-                {images.length > 1 && (
-                  <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 flex justify-between text-white/30 text-4xl pointer-events-none">
-                    <span>❮</span>
-                    <span>❯</span>
-                  </div>
-                )}
+                <Carousel
+                  className="mobile-carousel"
+                  selectedItem={currentImageIndex}
+                  onChange={(index) => setCurrentImageIndex(index)}
+                  showThumbs={false}
+                  showStatus={false}
+                  showArrows={false}
+                  showIndicators={images.length > 1}
+                  emulateTouch
+                  swipeable
+                >
+                  {images.map((img, idx) => (
+                    <div key={idx} className="flex items-center justify-center">
+                      <img
+                        src={img}
+                        alt="project_image"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  ))}
+                </Carousel>
               </div>
 
               {/* Close button for mobile view */}
-              <div className="fixed bottom-8 left-0 right-0 flex justify-center">
+              <div className="fixed bottom-20 left-0 right-0 flex justify-center" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={toggleExpand}
                   className="w-16 h-16 rounded-full bg-black/50 backdrop-blur-md text-white flex items-center justify-center active:bg-black/70 transition-all transform active:scale-95 text-4xl shadow-lg border border-white/10"
@@ -248,25 +260,6 @@ const ProjectCard = ({
                 </button>
               </div>
 
-              {/* Pagination dots for mobile */}
-              {images.length > 1 && (
-                <div className='fixed bottom-32 left-0 right-0 flex justify-center gap-4'>
-                  {images.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCurrentImageIndex(idx);
-                      }}
-                      className={`w-3 h-3 rounded-full transition-all ${
-                        idx === currentImageIndex 
-                          ? 'bg-white scale-110 shadow-lg' 
-                          : 'bg-white/50 hover:bg-white/75'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
             </motion.div>
           </motion.div>
         )}
