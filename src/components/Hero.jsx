@@ -13,7 +13,7 @@ const Hero = () => {
 
   return (
     <section className="relative w-full h-screen mx-auto overflow-hidden">
-      <div className={`absolute inset-0 top-[-40px] sm:top-0 max-w-7xl mx-auto ${styles.paddingX} z-10 flex items-center`}>
+      <div className={`absolute inset-0 top-0 max-w-7xl mx-auto ${styles.paddingX} pt-32 sm:pt-24 md:pt-18 z-10 flex items-start sm:items-center`}>
         <div className="flex flex-row items-center gap-4 sm:gap-6 w-full">
           {/* Vertical line indicator - Always on the left */}
           <div className='flex flex-col justify-center items-center'>
