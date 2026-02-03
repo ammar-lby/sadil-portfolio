@@ -101,7 +101,7 @@ const ProjectCard = ({
 
             {/* Expand indicator */}
             {isMobileView && (
-              <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/20 text-white/60 flex items-center justify-center backdrop-blur-sm">
+              <div className="absolute top-1 right--1 w-8 h-8 rounded-full bg-black/20 text-white/60 flex items-center justify-center backdrop-blur-sm">
                 <span className="text-lg">⤢</span>
               </div>
             )}
@@ -146,7 +146,7 @@ const ProjectCard = ({
 
             {/* Mobile mini arrows */}
             {images.length > 1 && isMobileView && (
-              <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-1">
+              <div className="absolute inset-y-0 -left-3 -right-3 flex items-center justify-between px-0">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
